@@ -3,11 +3,18 @@ import { Button } from "@/components/Button/button";
 import { Input } from "@/components/Input/input";
 import { GmailIcon } from "@/icons/gmail-icon/gmail";
 import { ShowPasswordIcon } from "@/icons/show-pass-icon/show-password-icon";
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import Link from "next/link";
+import * as actions from "@/actions";
 
 export default function SignIn() {
-  const err = "hejej";
+  const [formState, action] = useActionState(actions.signInCredentials, {
+    values: {
+      email: "",
+      password: "",
+    },
+    errors: {},
+  });
   const [showPassword, setShowPassword] = useState(false);
   return (
     <div className="flex relative mx-auto justify-center items-center pt-10">
@@ -22,19 +29,24 @@ export default function SignIn() {
         <h1 className="text-3xl font-bold flex items-center justify-center pt-12">
           Welcome back to AirStudy
         </h1>
-        <form className="pt-10 flex-col items-center pl-20 w-72 space-y-4">
+        <form
+          action={action}
+          className="pt-10 flex-col items-center pl-20 w-72 space-y-4"
+        >
           <Input
-            isInvalid={false}
-            errMsg={err}
             label="Email"
             type="email"
+            name="email"
             placeholder="Enter your email"
+            defaultValue={formState.values?.email}
           />
           <Input
-            isInvalid={false}
-            errMsg={err}
+            isInvalid={!!formState.errors.password}
+            errMsg={formState.errors.password?.join(" ") as string}
             label="Password"
+            name="password"
             placeholder="Enter your password"
+            defaultValue={formState.values?.password}
             type={showPassword ? "text" : "password"}
             icon={
               <ShowPasswordIcon
@@ -51,7 +63,7 @@ export default function SignIn() {
             </Link>
           </div>
           <div className="flex justify-end w-72 pb-5">
-            <Button size="md" className="text-sm">
+            <Button size="md" className="text-sm" type="submit">
               Sign in
             </Button>
           </div>

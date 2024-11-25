@@ -3,11 +3,20 @@ import { Button } from "@/components/Button/button";
 import { Input } from "@/components/Input/input";
 import { GmailIcon } from "@/icons/gmail-icon/gmail";
 import { ShowPasswordIcon } from "@/icons/show-pass-icon/show-password-icon";
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import Link from "next/link";
+import * as actions from "@/actions";
 
 export default function SignUp() {
-  const err = "hejej";
+  const [formState, action] = useActionState(actions.createUser, {
+    errors: {},
+    values: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -24,26 +33,35 @@ export default function SignUp() {
         <h1 className="text-2xl font-bold flex items-center justify-center pt-8">
           Sign up for AirStudy
         </h1>
-        <form className="pt-6 flex-col items-center pl-20 w-72 space-y-2">
+        <form
+          action={action}
+          className="pt-6 flex-col items-center pl-20 w-72 space-y-2"
+        >
           <Input
-            isInvalid={false}
-            errMsg={err}
+            isInvalid={!!formState.errors.fullName}
+            errMsg={formState.errors.fullName?.join(" ") as string}
             label="Fullname"
             type="text"
+            name="fullName"
             placeholder="Enter your fullname"
+            defaultValue={formState.values?.fullName}
           />
           <Input
-            isInvalid={false}
-            errMsg={err}
+            isInvalid={!!formState.errors.email}
+            errMsg={formState.errors.email?.join(" ") as string}
             label="Email"
             type="email"
+            name="email"
             placeholder="Enter your email"
+            defaultValue={formState.values?.email}
           />
           <Input
-            isInvalid={false}
-            errMsg={err}
+            isInvalid={!!formState.errors.password}
+            errMsg={formState.errors.password?.join(" ") as string}
             label="Password"
+            name="password"
             placeholder="Enter your password"
+            defaultValue={formState.values?.password}
             type={showPassword ? "text" : "password"}
             icon={
               <ShowPasswordIcon
@@ -52,10 +70,11 @@ export default function SignUp() {
             }
           />
           <Input
-            isInvalid={false}
-            errMsg={err}
+            isInvalid={!!formState.errors.confirmPassword}
+            errMsg={formState.errors.confirmPassword?.join(" ") as string}
             label="Confirm password"
             placeholder="Enter your password"
+            name="confirmPassword"
             type={showConfirmPassword ? "text" : "password"}
             icon={
               <ShowPasswordIcon
@@ -63,12 +82,6 @@ export default function SignUp() {
               />
             }
           />
-          <div className="pt-2 pb-2">
-            <select className="bg-gray-50 border border-black px-4 py-2 w-72 rounded-2xl">
-              <option>Student</option>
-              <option>Landlord</option>
-            </select>
-          </div>
           <div className="flex justify-end w-72">
             <Link
               href="/sign-in"
@@ -78,13 +91,13 @@ export default function SignUp() {
             </Link>
           </div>
           <div className="flex justify-end w-72 pb-2 pt-2">
-            <Button size="md" className="text-sm">
+            <Button size="md" className="text-sm" type="submit">
               Sign up
             </Button>
           </div>
           <hr className="flex justify-center w-72" />
           <div className="flex justify-center w-72 pt-2">
-            <Button size="sm" variant="secondary">
+            <Button size="sm" variant="secondary" type="submit">
               <GmailIcon className="pr-2" />
               Sign up with Gmail
             </Button>

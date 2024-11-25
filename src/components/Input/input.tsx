@@ -27,7 +27,7 @@ interface InputProps extends MotionInputProps {
   inputSize?: "xs" | "md" | "lg";
   isInvalid?: boolean;
   label: string;
-  errMsg: string;
+  errMsg?: string;
   icon?: React.ReactNode;
 }
 
