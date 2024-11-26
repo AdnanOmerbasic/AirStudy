@@ -2,10 +2,10 @@
 
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { hash } from "bcryptjs";
 import { userTable } from "@/lib/db/schema/userSchema";
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 const createUserSchema = z
   .object({
@@ -72,6 +72,19 @@ export async function createUser(
   }
 
   try {
+    const [user] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, email));
+    if (user) {
+      return {
+        errors: {
+          email: ["Email already exist. Please use another one."],
+        },
+        values: valuesFromForm,
+      };
+    }
+
     const passwordHashed = await hash(password, 10);
 
     await db.insert(userTable).values({
@@ -79,15 +92,8 @@ export async function createUser(
       email,
       passwordHashed,
     });
-  } catch (err: any) {
-    if (err.code === "23505") {
-      return {
-        errors: {
-          email: ["Email already exists. Please use a different one."],
-        },
-        values: valuesFromForm,
-      };
-    } else if (err instanceof Error) {
+  } catch (err: unknown) {
+    if (err instanceof Error) {
       return {
         errors: {
           unexpectedErr: [err.message],

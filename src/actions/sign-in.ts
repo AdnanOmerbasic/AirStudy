@@ -77,7 +77,7 @@ export async function signInCredentials(
       password,
       redirect: false,
     });
-  } catch (err: unknown) {
+  } catch {
     return {
       errors: {
         unexpectedErr: ["Could not sign you in. Please try again later."],
