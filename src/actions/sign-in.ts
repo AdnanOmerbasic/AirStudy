@@ -21,8 +21,8 @@ interface State {
 }
 
 const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8, "Password or Email is incorrect"),
+  email: z.string().email("Email or Password is incorrect"),
+  password: z.string().min(8, "Email or password is incorrect"),
 });
 
 export async function signInCredentials(

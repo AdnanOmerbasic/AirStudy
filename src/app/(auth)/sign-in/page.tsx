@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@/components/Button/button";
-import { Input } from "@/components/Input/input";
+import { Button } from "@/components/ui/Button/button";
+import { Input } from "@/components/ui/Input/input";
 import { GmailIcon } from "@/icons/gmail-icon/gmail";
 import { ShowPasswordIcon } from "@/icons/show-pass-icon/show-password-icon";
 import { useState, useActionState } from "react";
@@ -34,6 +34,8 @@ export default function SignIn() {
           className="pt-10 flex-col items-center pl-20 w-72 space-y-4"
         >
           <Input
+            isInvalid={!!formState.errors.email}
+            errMsg={formState.errors.email?.join(" ") as string}
             label="Email"
             type="email"
             name="email"

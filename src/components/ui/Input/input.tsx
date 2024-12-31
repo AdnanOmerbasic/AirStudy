@@ -4,9 +4,8 @@ import { motion, MotionProps } from "framer-motion";
 import React, { InputHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
-// CVA for Input-stilarter
 const inputCVA = cva(
-  "w-72 px-3 py-2.5 border rounded-xl focus:outline-none transition-colors text-left",
+  "w-full px-4 py-3 border rounded-md focus:outline-none transition-colors text-left",
   {
     variants: {
       inputSize: {
@@ -16,7 +15,7 @@ const inputCVA = cva(
       },
     },
     defaultVariants: {
-      inputSize: "xs",
+      inputSize: "md",
     },
   }
 );
@@ -43,7 +42,7 @@ export const Input = ({
   return (
     <div>
       <div>
-        {label && <label className="text-sm text-black">{label}</label>}
+        {label && <label className="text-md text-black">{label}</label>}
       </div>
       <div className="relative w-64">
         {icon && (

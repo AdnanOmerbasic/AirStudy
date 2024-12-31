@@ -1,9 +1,26 @@
 import Credentials from "next-auth/providers/credentials";
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import { db } from "@/lib/db";
 import { userTable } from "@/lib/db/schema/userSchema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+
+declare module "next-auth" {
+  interface User {
+    isAdmin: boolean | null;
+  }
+  interface Session {
+    user: {
+      isAdmin: boolean | null;
+    } & DefaultSession["user"];
+  }
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    isAdmin: boolean | null;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -37,6 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {
           id: user.id.toString(),
           email: user.email,
+          isAdmin: user.isAdmin,
         };
       },
     }),
@@ -46,11 +64,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.isAdmin = user.isAdmin;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id as string;
+      session.user.isAdmin = token.isAdmin as boolean;
       return session;
     },
   },

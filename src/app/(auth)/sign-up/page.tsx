@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@/components/Button/button";
-import { Input } from "@/components/Input/input";
+import { Button } from "@/components/ui/Button/button";
+import { Input } from "@/components/ui/Input/input";
 import { GmailIcon } from "@/icons/gmail-icon/gmail";
 import { ShowPasswordIcon } from "@/icons/show-pass-icon/show-password-icon";
 import { useState, useActionState } from "react";
