@@ -6,7 +6,7 @@ import clsx from "clsx";
 
 interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   input: string;
   action: (FormData: FormData) => Promise<void>;
   ref?: React.Ref<HTMLDivElement>;

@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "..";
-import { rentalPropertyTable, userTable } from "../schema/schema";
+import { rentalPropertyTable } from "../schema/schema";
 
 export async function getRentalById(id: number, userId: number) {
   const [getById] = await db

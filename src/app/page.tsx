@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Form from "next/form";
 import { Button } from "@/components/ui/Button/button";
 
