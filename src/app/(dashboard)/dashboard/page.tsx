@@ -47,7 +47,7 @@ export default async function Dashboard() {
           <strong>{session?.user?.email}</strong>
         </h1>
       </div>
-      <Tabel headers={headers} body={rentalData} />
+      <Tabel headers={headers} body={rentalData} session={session} />
     </div>
   );
 }

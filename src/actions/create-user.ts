@@ -13,6 +13,7 @@ const createUserSchema = z
     email: z.string().email("Invalid email"),
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z.string(),
+    isAdmin: z.boolean().default(false),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -51,6 +52,7 @@ export async function createUser(
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
+    isAdmin: formData.get("isAdmin") === "true",
   });
 
   if (!validateForm.success) {
@@ -60,7 +62,7 @@ export async function createUser(
     };
   }
 
-  const { fullName, email, password, confirmPassword } = validateForm.data;
+  const { fullName, email, password, confirmPassword, isAdmin } = validateForm.data;
 
   if (password !== confirmPassword) {
     return {
@@ -91,6 +93,7 @@ export async function createUser(
       fullName,
       email,
       passwordHashed,
+      isAdmin
     });
   } catch (err: unknown) {
     if (err instanceof Error) {

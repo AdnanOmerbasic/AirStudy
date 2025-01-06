@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Button } from "../ui/Button/button";
 import { BurgerMenu } from "../BurgerMenu/burger-menu";
-import { SessionProvider } from "next-auth/react";
 import { auth } from "../../../auth";
 import { ButtonSignOut } from "../ui/Button/signOutButton";
 import { UserHasAtLeastOneRental } from "@/lib/db/queries/user-has-rentals";
@@ -10,7 +9,6 @@ export const Navbar = async () => {
   const session = await auth();
   const hasRentals = await UserHasAtLeastOneRental();
   return (
-    <SessionProvider>
       <header className="w-full px-10 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl inline-flex">
           <span className="text-sky-400 font-bold">Air</span>Study
@@ -49,6 +47,5 @@ export const Navbar = async () => {
           <BurgerMenu session={session} />
         </div>
       </header>
-    </SessionProvider>
   );
 };

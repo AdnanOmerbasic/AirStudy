@@ -1,23 +1,26 @@
 "use server";
+
 import { db } from "@/lib/db";
-import { rentalPropertyTable, availabilityTable } from "@/lib/db/schema/schema";
+import {
+  rentalPropertyTable,
+  availabilityTable,
+  imageTable,
+} from "@/lib/db/schema/schema";
 import { z } from "zod";
 import { auth } from "../../auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { imageTable } from "@/lib/db/schema/imageSchema";
 import { s3 } from "@/utils/aws3";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { ConvertFileToBuffer } from "@/utils/convertFile";
+import { eq } from "drizzle-orm";
 
-const createRentalSchema = z
+const updateRentalSchema = z
   .object({
     title: z.string().min(3, "Title must be at least 2 characters long"),
     description: z
       .string()
       .min(10, "Description must be at least 10 characters long"),
-    country: z.string().min(2, "Invalid country"),
-    city: z.string().min(1, "Invalid country"),
     address: z.string().min(2, "Address must be at least 2 characters long"),
     price: z.number().min(100, "Price must be at least 100 eur"),
     startDate: z.date().refine((date) => date >= new Date(), {
@@ -39,19 +42,9 @@ const createRentalSchema = z
   );
 
 interface State {
-  values?: {
-    title?: string;
-    description?: string;
-    country?: string;
-    city?: string;
-    address?: string;
-    price?: number;
-  };
   errors: {
     title?: string[];
     description?: string[];
-    country?: string[];
-    city?: string[];
     address?: string[];
     price?: string[];
     images?: string[];
@@ -61,24 +54,14 @@ interface State {
   };
 }
 
-export async function createRental(
+export async function updateRental(
+  params: { id: string },
   formState: State,
   formData: FormData
 ): Promise<State> {
-  const valuesFromForm = {
-    title: formData.get("title")?.toString(),
-    description: formData.get("description")?.toString(),
-    country: formData.get("country")?.toString(),
-    city: formData.get("city")?.toString(),
-    address: formData.get("address")?.toString(),
-    price: Number(formData.get("price")?.toString()),
-  };
-
-  const validateForm = createRentalSchema.safeParse({
+  const validateForm = updateRentalSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
-    country: formData.get("country"),
-    city: formData.get("city"),
     address: formData.get("address"),
     price: Number(formData.get("price")),
     startDate: new Date(formData.get("startDate") as string),
@@ -87,66 +70,65 @@ export async function createRental(
 
   if (!validateForm.success) {
     return {
-      values: valuesFromForm,
       errors: validateForm.error.flatten().fieldErrors,
     };
   }
 
   const images = formData.getAll("file") as File[];
-  if (!images.length || images.length === 0) {
-    return {
-      errors: {
-        images: ["No images uploaded"],
-      },
-      values: valuesFromForm,
-    };
-  }
 
-  const {
-    title,
-    description,
-    country,
-    city,
-    address,
-    price,
-    startDate,
-    endDate,
-  } = validateForm.data;
+  const { title, description, address, price, startDate, endDate } =
+    validateForm.data;
 
   try {
     const session = await auth();
-    const imageUploads: string[] = [];
 
     if (!session?.user?.id) {
       return {
         errors: {
-          unexpectedErr: ["You must be logged in to create a rental property."],
+          unexpectedErr: [
+            "You must be logged in to update your rental property",
+          ],
         },
-        values: valuesFromForm,
       };
     }
-    await db.transaction(async (tx) => {
-      const [newRentalProperty] = await tx
-        .insert(rentalPropertyTable)
-        .values({
-          title,
-          description,
-          country,
-          city,
-          address,
-          price,
-          ownerId: Number(session?.user?.id),
-        })
-        .returning();
 
-      await tx
-        .insert(availabilityTable)
-        .values({
-          startDate: startDate.toISOString().slice(0, 10),
-          endDate: endDate.toISOString().slice(0, 10),
-          rentalPropertyId: newRentalProperty.id,
-        })
-        .returning();
+    await db.transaction(async (tx) => {
+      const [existingRental] = await db
+        .select()
+        .from(rentalPropertyTable)
+        .where(eq(rentalPropertyTable.id, Number(params.id)));
+
+      if (
+        !existingRental ||
+        existingRental.ownerId !== Number(session.user.id)
+      ) {
+        throw new Error("No property found");
+      }
+
+      if (images.length > 0) {
+        const [oldImages] = await db
+          .select()
+          .from(imageTable)
+          .where(eq(imageTable.rentalPropertyId, Number(params.id)));
+
+        if (oldImages && oldImages.images) {
+          const urls = JSON.parse(oldImages.images) as string[];
+
+          for (const imageUrl of urls) {
+            const fileKey = imageUrl.split("/").pop();
+            if (fileKey) {
+              await s3.send(
+                new DeleteObjectCommand({
+                  Bucket: process.env.AWS_BUCKET_NAME!,
+                  Key: `images/${fileKey}`,
+                })
+              );
+            }
+          }
+        }
+      }
+
+      const newImageUploads: string[] = [];
 
       for (const image of images) {
         const fileBuffer = await ConvertFileToBuffer(image);
@@ -160,36 +142,52 @@ export async function createRental(
 
         await s3.send(new PutObjectCommand(params));
         const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
-        imageUploads.push(imageUrl);
+        newImageUploads.push(imageUrl);
       }
 
       await tx
-        .insert(imageTable)
-        .values({
-          rentalPropertyId: newRentalProperty.id,
-          images: JSON.stringify(imageUploads),
+        .update(rentalPropertyTable)
+        .set({
+          title,
+          description,
+          address,
+          price,
         })
-        .returning();
+        .where(eq(rentalPropertyTable.id, Number(params.id)));
+
+      await tx
+        .update(availabilityTable)
+        .set({
+          startDate: startDate.toISOString().slice(0, 10),
+          endDate: endDate.toISOString().slice(0, 10),
+        })
+        .where(eq(availabilityTable.rentalPropertyId, Number(params.id)));
+
+      await tx
+        .update(imageTable)
+        .set({
+          images: JSON.stringify(newImageUploads),
+        })
+        .where(eq(imageTable.rentalPropertyId, Number(params.id)));
     });
   } catch (err: unknown) {
-    console.error("Transaction error:", err);
     if (err instanceof Error) {
       return {
         errors: {
           unexpectedErr: [err.message],
         },
-        values: valuesFromForm,
       };
     } else {
       return {
         errors: {
           unexpectedErr: [
-            "Unexpected error, could not create a rental. Please try again later",
+            "Unexpected error, could not update your rental. Please try again later",
           ],
         },
       };
     }
   }
   revalidatePath("/dashboard");
-  redirect("/");
+  revalidatePath("/admin-dashboard");
+  redirect("/dashboard");
 }

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import * as actions from "@/actions";
 import { Input } from "@/components/ui/Input/input";
+import { ImageUpload } from "@/components/ui/ImageUpload/image-upload";
 
 export default function Component() {
   const [formState, action] = useActionState(actions.createRental, {
@@ -10,6 +11,8 @@ export default function Component() {
     values: {
       title: "",
       description: "",
+      country: "",
+      city: "",
       address: "",
       price: 0,
     },
@@ -18,7 +21,7 @@ export default function Component() {
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-5">Create Rental</h1>
-      <form action={action} className="space-y-4">
+      <form action={action} className="space-y-10">
         {/* Title */}
         <div>
           <Input
@@ -43,6 +46,28 @@ export default function Component() {
             placeholder="Enter description"
             defaultValue={formState.values?.description}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+          />
+        </div>
+        <div>
+          <Input
+            type="text"
+            label="Input"
+            name="country"
+            id="country"
+            placeholder="Country"
+            defaultValue={formState.values?.country}
+            className="mt-1 block w-96 text-sm border outlineGray rounded-md shadow-sm"
+          />
+        </div>
+        <div>
+          <Input
+            type="text"
+            label="Input"
+            name="city"
+            id="city"
+            placeholder="city"
+            defaultValue={formState.values?.city}
+            className="mt-1 block w-96 text-sm border outlineGray rounded-md shadow-sm"
           />
         </div>
 
@@ -75,8 +100,7 @@ export default function Component() {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           />
         </div>
-        <input type="file" name="file" required multiple accept="image/*" />
-
+        {/* <input type="file" name="file" required multiple accept="image/*" /> */}
         {/* Start Date */}
         <div>
           <label htmlFor="startDate" className="block text-sm font-medium">
@@ -102,12 +126,13 @@ export default function Component() {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           />
         </div>
+        <ImageUpload name="file" />
 
         {/* Submit Button */}
         <div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-24"
           >
             Create Rental
           </button>

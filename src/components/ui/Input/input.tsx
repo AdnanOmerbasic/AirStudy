@@ -42,7 +42,7 @@ export const Input = ({
   return (
     <div>
       <div>
-        {label && <label className="text-md text-black">{label}</label>}
+        {label && <label className="text-sm whitespace-pre-line text-black">{label}</label>}
       </div>
       <div className="relative w-64">
         {icon && (
@@ -56,7 +56,8 @@ export const Input = ({
             isInvalid
               ? "border-red-500 focus:ring-red-500"
               : "border-gray-300 focus:ring-blue-500",
-            className
+            className,
+            "min-w-[200px] w-full"
           )}
           animate={isInvalid ? { x: [-10, 12, -10, 12, 0] } : {}}
           transition={{ duration: 0.4 }}

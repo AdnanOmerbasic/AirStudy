@@ -10,8 +10,6 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export const deleteRental = async (rentalId: number) => {
-  "use server";
-
   try {
     const images = await db
       .select({ urls: imageTable.images })
@@ -47,8 +45,9 @@ export const deleteRental = async (rentalId: number) => {
     });
 
     revalidatePath("/dashboard");
-  } catch (err) {
-    console.error("Error deleting rental:", err);
+    revalidatePath("/admin-dashboard");
+    revalidatePath("/stays/search");
+  } catch {
     throw new Error("Failed to delete rental");
   }
 };
