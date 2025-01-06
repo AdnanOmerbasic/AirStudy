@@ -6,13 +6,11 @@ import { auth } from "../../../../../../../auth";
 export default async function UpdateRentalPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await auth();
-  const getById = await getRentalById(
-    Number(params.id),
-    Number(session?.user.id)
-  );
+  const getById = await getRentalById(Number(id), Number(session?.user.id));
 
   if (!getById) {
     return notFound();
