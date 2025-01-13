@@ -19,7 +19,7 @@ export default async function UpdateRentalPage({
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-5">Update Rental</h1>
-      <UpdateRentalForm id={JSON.stringify(getById)} />
+      <UpdateRentalForm id={getById.id} /> 
     </div>
   );
 }

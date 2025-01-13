@@ -6,7 +6,7 @@ import clsx from "clsx";
 
 interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose: () => void;
-  onDelete?: () => void;
+  onDelete: () => void;
   input: string;
   action: (FormData: FormData) => Promise<void>;
   ref?: React.Ref<HTMLDivElement>;
@@ -38,7 +38,9 @@ export const Modal = ({
             type="text"
             label={`Type ${input} below to confirm`}
             value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setInputVal(e.target.value)
+            }
           />
         </div>
         <div className="pt-6 flex justify-center w-full space-x-10">

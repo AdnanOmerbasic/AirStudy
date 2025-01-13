@@ -17,7 +17,7 @@ const createRentalSchema = z
       .string()
       .min(10, "Description must be at least 10 characters long"),
     country: z.string().min(2, "Invalid country"),
-    city: z.string().min(1, "Invalid country"),
+    city: z.string().min(1, "Invalid city"),
     address: z.string().min(2, "Address must be at least 2 characters long"),
     price: z.number().min(100, "Price must be at least 100 eur"),
     startDate: z.date().refine((date) => date >= new Date(), {
@@ -191,5 +191,7 @@ export async function createRental(
     }
   }
   revalidatePath("/dashboard");
+  revalidatePath("/admin-dashboard");
+  revalidatePath("/stays/search");
   redirect("/");
 }

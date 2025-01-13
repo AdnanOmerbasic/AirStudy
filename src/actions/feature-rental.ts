@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 
 export async function featureRental(id: number) {
   try {
-    console.log("Feature Rental triggered with ID:", id);
     await db
       .update(rentalPropertyTable)
       .set({ isFeatured: true })

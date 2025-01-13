@@ -17,3 +17,4 @@ export async function removeRentalFeature(id: number) {
   revalidatePath("/admin-dashboard");
   revalidatePath("/");
 }
+    

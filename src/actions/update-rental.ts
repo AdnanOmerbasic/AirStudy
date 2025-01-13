@@ -21,6 +21,8 @@ const updateRentalSchema = z
     description: z
       .string()
       .min(10, "Description must be at least 10 characters long"),
+    country: z.string().min(2, "Invalid country"),
+    city: z.string().min(1, "Invalid city"),
     address: z.string().min(2, "Address must be at least 2 characters long"),
     price: z.number().min(100, "Price must be at least 100 eur"),
     startDate: z.date().refine((date) => date >= new Date(), {
@@ -45,6 +47,8 @@ interface State {
   errors: {
     title?: string[];
     description?: string[];
+    country?: string[];
+    city?: string[];
     address?: string[];
     price?: string[];
     images?: string[];
@@ -55,13 +59,15 @@ interface State {
 }
 
 export async function updateRental(
-  params: { id: string },
+  params: { id: number },
   formState: State,
   formData: FormData
 ): Promise<State> {
   const validateForm = updateRentalSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
+    country: formData.get("country"),
+    city: formData.get("city"),
     address: formData.get("address"),
     price: Number(formData.get("price")),
     startDate: new Date(formData.get("startDate") as string),
@@ -76,8 +82,16 @@ export async function updateRental(
 
   const images = formData.getAll("file") as File[];
 
-  const { title, description, address, price, startDate, endDate } =
-    validateForm.data;
+  const {
+    title,
+    description,
+    country,
+    city,
+    address,
+    price,
+    startDate,
+    endDate,
+  } = validateForm.data;
 
   try {
     const session = await auth();
@@ -150,6 +164,8 @@ export async function updateRental(
         .set({
           title,
           description,
+          country,
+          city,
           address,
           price,
         })
@@ -189,5 +205,7 @@ export async function updateRental(
   }
   revalidatePath("/dashboard");
   revalidatePath("/admin-dashboard");
+  revalidatePath("/");
+  revalidatePath("/stays/search");
   redirect("/dashboard");
 }

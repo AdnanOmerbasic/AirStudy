@@ -1,6 +1,5 @@
 "use client";
 import { cva } from "class-variance-authority";
-import { motion, MotionProps } from "framer-motion";
 import React, { InputHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -20,9 +19,7 @@ const inputCVA = cva(
   }
 );
 
-type MotionInputProps = MotionProps & InputHTMLAttributes<HTMLInputElement>;
-
-interface InputProps extends MotionInputProps {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   inputSize?: "xs" | "md" | "lg";
   isInvalid?: boolean;
   label: string;
@@ -42,7 +39,14 @@ export const Input = ({
   return (
     <div>
       <div>
-        {label && <label className="text-sm whitespace-pre-line text-black">{label}</label>}
+        {label && (
+          <label
+            htmlFor={props.id}
+            className="text-sm whitespace-pre-line text-black"
+          >
+            {label}
+          </label>
+        )}
       </div>
       <div className="relative w-64">
         {icon && (
@@ -50,7 +54,7 @@ export const Input = ({
             {icon}
           </div>
         )}
-        <motion.input
+        <input
           className={twMerge(
             inputCVA({ inputSize }),
             isInvalid
@@ -59,8 +63,6 @@ export const Input = ({
             className,
             "min-w-[200px] w-full"
           )}
-          animate={isInvalid ? { x: [-10, 12, -10, 12, 0] } : {}}
-          transition={{ duration: 0.4 }}
           {...props}
         />
       </div>

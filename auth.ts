@@ -28,7 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
-      },
+      },    
       async authorize(credentials) {
         const [user] = await db
           .select()

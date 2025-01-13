@@ -58,14 +58,6 @@ export const ImageUpload = ({ name }: { name: string }) => {
                   className="w-28 h-28 object-cover rounded-lg"
                 />
               </Link>
-              <span
-                className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-md cursor-pointer z-50"
-                onClick={() =>
-                  setImages((imgs) => imgs.filter((_, i) => i !== index))
-                }
-              >
-                x
-              </span>
             </div>
           ))}
         </div>
