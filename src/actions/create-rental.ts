@@ -9,10 +9,9 @@ import { imageTable } from "@/lib/db/schema/imageSchema";
 import { s3 } from "@/utils/aws3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { ConvertFileToBuffer } from "@/utils/convertFile";
-
 const createRentalSchema = z
   .object({
-    title: z.string().min(3, "Title must be at least 2 characters long"),
+    title: z.string().min(3, "Title must be at least 3 characters long"),
     description: z
       .string()
       .min(10, "Description must be at least 10 characters long"),
@@ -20,6 +19,7 @@ const createRentalSchema = z
     city: z.string().min(1, "Invalid city"),
     address: z.string().min(2, "Address must be at least 2 characters long"),
     price: z.number().min(100, "Price must be at least 100 eur"),
+    images: z.array(z.any()).min(1, "You need to upload at least one image"),
     startDate: z.date().refine((date) => date >= new Date(), {
       message: "Start date must be in the future",
     }),
@@ -81,24 +81,20 @@ export async function createRental(
     city: formData.get("city"),
     address: formData.get("address"),
     price: Number(formData.get("price")),
+    images: formData.getAll("images") as File[] || [],
     startDate: new Date(formData.get("startDate") as string),
     endDate: new Date(formData.get("endDate") as string),
   });
+
+  for (const [key, value] of formData.entries()) {
+    console.log(key, value);
+  }
+  console.log("Modtagne billeder:", validateForm.data?.images);
 
   if (!validateForm.success) {
     return {
       values: valuesFromForm,
       errors: validateForm.error.flatten().fieldErrors,
-    };
-  }
-
-  const images = formData.getAll("file") as File[];
-  if (!images.length || images.length === 0) {
-    return {
-      errors: {
-        images: ["No images uploaded"],
-      },
-      values: valuesFromForm,
     };
   }
 
@@ -109,6 +105,7 @@ export async function createRental(
     city,
     address,
     price,
+    images,
     startDate,
     endDate,
   } = validateForm.data;

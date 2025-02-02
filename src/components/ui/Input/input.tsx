@@ -4,7 +4,7 @@ import React, { InputHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
 const inputCVA = cva(
-  "w-full px-4 py-3 border rounded-md focus:outline-none transition-colors text-left",
+  "w-full px-4 py-2 text-gray-700 bg-gray-50 rounded-lg text-left",
   {
     variants: {
       inputSize: {
@@ -37,7 +37,7 @@ export const Input = ({
   ...props
 }: InputProps) => {
   return (
-    <div>
+    <div className="space-y-2">
       <div>
         {label && (
           <label
@@ -48,9 +48,9 @@ export const Input = ({
           </label>
         )}
       </div>
-      <div className="relative w-64">
+      <div className="relative w-full">
         {icon && (
-          <div className="absolute inset-y-0 right-0 flex items-center pl-3">
+          <div className="absolute inset-y-0 right-2 flex items-center pl-3">
             {icon}
           </div>
         )}

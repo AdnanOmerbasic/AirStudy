@@ -34,7 +34,6 @@ export const ImageUpload = ({ name }: { name: string }) => {
             hidden
             name={name}
             type="file"
-            required
             multiple
             accept="image/*"
           />
