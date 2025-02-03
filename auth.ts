@@ -1,5 +1,6 @@
 import Credentials from "next-auth/providers/credentials";
 import NextAuth, { DefaultSession } from "next-auth";
+import Google from "next-auth/providers/google"
 import { JWT } from "next-auth/jwt";
 import { db } from "@/lib/db";
 import { userTable } from "@/lib/db/schema/userSchema";
@@ -24,6 +25,7 @@ declare module "next-auth/jwt" {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
+    Google,
     Credentials({
       credentials: {
         email: {},

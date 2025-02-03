@@ -6,6 +6,7 @@ import { ShowPasswordIcon } from "@/icons/show-pass-icon/show-password-icon";
 import { useState, useActionState } from "react";
 import Link from "next/link";
 import * as actions from "@/actions";
+import SignInWithGoogle from "@/components/Forms/google-sign-in-form";
 
 export default function SignIn() {
   const [formState, action] = useActionState(actions.signInCredentials, {
@@ -70,13 +71,8 @@ export default function SignIn() {
             </Button>
           </div>
           <hr className="flex justify-center w-72" />
-          <div className="flex justify-center w-72 pt-4">
-            <Button size="sm" variant="secondary">
-              <GmailIcon className="pr-2" />
-              Sign in with Gmail
-            </Button>
-          </div>
         </form>
+        <SignInWithGoogle />
       </div>
     </div>
   );
