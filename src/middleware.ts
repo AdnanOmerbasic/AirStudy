@@ -1,5 +1,5 @@
 import { UserHasAtLeastOneRental } from "@/lib/db/queries/user-has-rentals";
-import { auth } from "./auth";
+import { auth } from "../auth";
 import { NextResponse } from "next/server";
 
 const isLoggedIn = ["/sign-in", "/sign-up", "admin-dashboard"];
