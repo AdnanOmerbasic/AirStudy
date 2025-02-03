@@ -7,7 +7,7 @@ import { rentalPropertyTable } from "../schema/rentalSchema";
 export async function UserHasAtLeastOneRental() {
   const session = await auth();
 
-  if (!session) {
+  if (!session || isNaN(Number(session.user.id))) {
     return null;
   }
 
