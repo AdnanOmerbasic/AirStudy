@@ -3,38 +3,36 @@ import { auth } from "./auth";
 import { NextResponse } from "next/server";
 
 const isLoggedIn = ["/sign-in", "/sign-up", "admin-dashboard"];
-const notRenting = ["/dashboard", "/admin-dashboard"];
-const notLoggedIn = ["start-rental", "/dashboard", "/admin-dashboard"];
-
+const userRenting = ["/dashboard", "/admin-dashboard"];
+const protectedRoutes = ["/dashboard", "/admin-dashboard", "/start-rental"];
 
 export default auth(async (req) => {
   const { pathname, origin } = req.nextUrl;
+  const user = req.auth;
   const hasRental = await UserHasAtLeastOneRental();
 
-  console.log("Current pathname:", pathname);
-  console.log("Auth data:", req.auth);
-
-  if (req.auth && isLoggedIn.includes(pathname)) {
-    console.log("Redirecting from logged-in auth route...");
-    const newUrl = new URL("/", origin);
-    return NextResponse.redirect(newUrl);
+  if (user && isLoggedIn.includes(pathname)) {
+    return NextResponse.redirect(new URL("/sign-in", origin));
   }
 
-  if (req.auth && !hasRental && notRenting.includes(pathname)) {
-    console.log("Redirecting from logged-in auth route...");
-    const newUrl = new URL("/", origin);
-    return NextResponse.redirect(newUrl);
+  if (user && !hasRental && userRenting.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", origin));
   }
 
-  if (!req.auth && notLoggedIn.includes(pathname)) {
-    console.log("Redirecting from logged-in auth route...");
-    const newUrl = new URL("/", origin);
-    return NextResponse.redirect(newUrl);
+  if (!user && protectedRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/sign-in", origin));
   }
 
   return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/sign-in",
+    "/sign-up",
+    "/admin-dashboard",
+    "/dashboard",
+    "/start-rental",
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };
