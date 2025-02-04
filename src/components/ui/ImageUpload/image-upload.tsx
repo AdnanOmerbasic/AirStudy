@@ -4,7 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-export const ImageUpload = ({ name }: { name: string }) => {
+export const ImageUpload = ({
+  name,
+  isInvalid,
+  errMsg,
+}: {
+  name: string;
+  isInvalid: boolean;
+  errMsg: string;
+}) => {
   const [images, setImages] = useState<File[]>([]);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -59,6 +67,9 @@ export const ImageUpload = ({ name }: { name: string }) => {
               </Link>
             </div>
           ))}
+          {errMsg && isInvalid && (
+            <p className="text-sm text-red-500">{errMsg}</p>
+          )}
         </div>
       </div>
     </div>

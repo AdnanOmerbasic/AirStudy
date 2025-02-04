@@ -65,6 +65,11 @@ export async function createRental(
   formState: State,
   formData: FormData
 ): Promise<State> {
+  
+  const uploadedImages = (formData.getAll("images") as File[]).filter(
+    (file) => file.size > 0 && file.name !== "undefined"
+  );
+
   const valuesFromForm = {
     title: formData.get("title")?.toString(),
     description: formData.get("description")?.toString(),
@@ -81,7 +86,7 @@ export async function createRental(
     city: formData.get("city"),
     address: formData.get("address"),
     price: Number(formData.get("price")),
-    images: formData.getAll("images") as File[] || [],
+    images: uploadedImages.length > 0 ? uploadedImages : [],
     startDate: new Date(formData.get("startDate") as string),
     endDate: new Date(formData.get("endDate") as string),
   });

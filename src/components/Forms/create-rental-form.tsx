@@ -181,15 +181,16 @@ export default function RentalForm() {
             />
           </div>
           <div className="space-y-2 col-span-2">
-            <ImageUpload name="images"/>
-            {state.errors.images && (
-              <p className="text-sm text-red-500">
-                {state.errors.images.join(" ")}
-              </p>
-            )}
+            <ImageUpload
+              name="images"
+              isInvalid={!!state.errors.images}
+              errMsg={state.errors.images?.join(" ") as string}
+            />
           </div>
           <div className="col-span-2 mt-44">
-            <Button type="submit" className="w-full" >Create Rental</Button>
+            <Button type="submit" className="w-full">
+              Create Rental
+            </Button>
           </div>
         </div>
       </form>
