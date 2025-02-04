@@ -65,7 +65,7 @@ export async function createRental(
   formState: State,
   formData: FormData
 ): Promise<State> {
-  
+
   const uploadedImages = (formData.getAll("images") as File[]).filter(
     (file) => file.size > 0 && file.name !== "undefined"
   );
@@ -90,11 +90,6 @@ export async function createRental(
     startDate: new Date(formData.get("startDate") as string),
     endDate: new Date(formData.get("endDate") as string),
   });
-
-  for (const [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
-  console.log("Modtagne billeder:", validateForm.data?.images);
 
   if (!validateForm.success) {
     return {
