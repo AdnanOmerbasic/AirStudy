@@ -10,7 +10,7 @@ interface TableHeader {
 
 interface TableBody {
   id: string;
-  fullName: string;
+  fullName: string | null;
   email: string;
   isAdmin?: string;
 }
@@ -40,7 +40,7 @@ export const TabelUser = ({
   const filteredBody = body.filter(
     (body) =>
       body.id.toString().includes(searchTerm) ||
-      body.fullName.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+      body.fullName!.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
       body.email.toLowerCase().includes(searchTerm.toLocaleLowerCase())
   );
 
