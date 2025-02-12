@@ -9,7 +9,7 @@ interface TableHeader {
 }
 
 interface TableBody {
-  id: number;
+  id: string;
   fullName: string;
   email: string;
   isAdmin?: string;
@@ -31,7 +31,10 @@ export const TabelUser = ({
 
   const handleSort = () => {
     setSort(sort === "asc" ? "desc" : "asc");
-    body.sort((a, b) => (sort === "asc" ? b.id - a.id : a.id - b.id));
+    body.sort((a, b) => {
+      const sorting = sort === "asc" ? 1 : -1;
+      return a.id.localeCompare(b.id) * sorting;
+    });
   };
 
   const filteredBody = body.filter(

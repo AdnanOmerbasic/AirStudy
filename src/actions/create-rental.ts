@@ -65,7 +65,6 @@ export async function createRental(
   formState: State,
   formData: FormData
 ): Promise<State> {
-
   const uploadedImages = (formData.getAll("images") as File[]).filter(
     (file) => file.size > 0 && file.name !== "undefined"
   );
@@ -122,6 +121,7 @@ export async function createRental(
         values: valuesFromForm,
       };
     }
+    
     await db.transaction(async (tx) => {
       const [newRentalProperty] = await tx
         .insert(rentalPropertyTable)
@@ -132,7 +132,7 @@ export async function createRental(
           city,
           address,
           price,
-          ownerId: Number(session?.user?.id),
+          ownerId: session.user.id!.toLowerCase(),
         })
         .returning();
 

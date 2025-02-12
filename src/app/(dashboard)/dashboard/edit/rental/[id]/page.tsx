@@ -10,7 +10,7 @@ export default async function UpdateRentalPage({
 }) {
   const { id } = await params;
   const session = await auth();
-  const getById = await getRentalById(Number(id), Number(session?.user.id));
+  const getById = await getRentalById(Number(id), session!.user.id!);
 
   if (!getById) {
     return notFound();
@@ -19,7 +19,7 @@ export default async function UpdateRentalPage({
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-5">Update Rental</h1>
-      <UpdateRentalForm id={getById.id} /> 
+      <UpdateRentalForm id={String(getById.id)} />
     </div>
   );
 }

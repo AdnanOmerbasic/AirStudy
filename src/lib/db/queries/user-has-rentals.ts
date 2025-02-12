@@ -7,14 +7,14 @@ import { rentalPropertyTable } from "../schema/rentalSchema";
 export async function UserHasAtLeastOneRental() {
   const session = await auth();
 
-  if (!session || isNaN(Number(session.user.id))) {
+  if (!session) {
     return null;
   }
 
   const userRentals = await db
     .select()
     .from(rentalPropertyTable)
-    .where(eq(rentalPropertyTable.ownerId, Number(session.user?.id)));
+    .where(eq(rentalPropertyTable.ownerId, session.user.id!));
 
   return userRentals.length > 0;
 }

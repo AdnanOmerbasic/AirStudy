@@ -23,7 +23,7 @@ export async function GetUserRentals() {
       imageTable,
       eq(imageTable.rentalPropertyId, rentalPropertyTable.id)
     )
-    .where(eq(rentalPropertyTable.ownerId, Number(session?.user?.id)));
+    .where(eq(rentalPropertyTable.ownerId, session.user.id!));
 
   return rentalProperties;
 }

@@ -59,7 +59,7 @@ interface State {
 }
 
 export async function updateRental(
-  params: { id: number },
+  params: { id: string },
   formState: State,
   formData: FormData
 ): Promise<State> {
@@ -114,7 +114,7 @@ export async function updateRental(
 
       if (
         !existingRental ||
-        existingRental.ownerId !== Number(session.user.id)
+        existingRental.ownerId !== session.user.id
       ) {
         throw new Error("No property found");
       }

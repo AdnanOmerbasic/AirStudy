@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1732568642720,
-      "tag": "0000_nifty_living_lightning",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1732761947465,
-      "tag": "0001_whole_reavers",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1733175473256,
-      "tag": "0002_dapper_george_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1733175578103,
-      "tag": "0003_common_network",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1736107694167,
-      "tag": "0004_clear_lady_deathstrike",
+      "when": 1739379158014,
+      "tag": "0000_stormy_gideon",
       "breakpoints": true
     }
   ]

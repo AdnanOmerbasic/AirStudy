@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, date, text } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, date, text, uuid } from "drizzle-orm/pg-core";
 import { rentalPropertyTable } from "./rentalSchema";
 import { userTable } from "./userSchema";
 
@@ -10,7 +10,7 @@ export const bookingTable = pgTable("bookings", {
   rentalPropertyId: integer("rentalPropertyId")
     .references(() => rentalPropertyTable.id)
     .notNull(),
-  userId: integer("userId")
+  userId: uuid("userId")
     .references(() => userTable.id)
     .notNull(),
 });

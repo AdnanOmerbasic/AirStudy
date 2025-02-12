@@ -6,6 +6,7 @@ import {
   timestamp,
   serial,
   boolean,
+  uuid
 } from "drizzle-orm/pg-core";
 import { userTable } from "./userSchema";
 
@@ -22,7 +23,7 @@ export const rentalPropertyTable = pgTable("rental_properties", {
     .defaultNow()
     .$onUpdate(() => new Date()),
   isFeatured: boolean("isFeatured").default(false),
-  ownerId: integer("ownerId")
+  ownerId: uuid("ownerId")
     .references(() => userTable.id)
     .notNull(),
 });

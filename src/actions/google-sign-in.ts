@@ -2,6 +2,6 @@
 
 import { signIn } from "../../auth";
 
-export async function googleSignIn(){
-    await signIn("google");
+export async function googleSignIn() {
+  await signIn("google");
 }

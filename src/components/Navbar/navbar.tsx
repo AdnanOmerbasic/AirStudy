@@ -8,6 +8,7 @@ import { UserHasAtLeastOneRental } from "@/lib/db/queries/user-has-rentals";
 export const Navbar = async () => {
   const session = await auth();
   const hasRentals = await UserHasAtLeastOneRental();
+  
   return (
       <header className="w-full px-10 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl inline-flex">

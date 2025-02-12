@@ -1,6 +1,6 @@
 import Credentials from "next-auth/providers/credentials";
 import NextAuth, { DefaultSession } from "next-auth";
-import Google from "next-auth/providers/google"
+import Google from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { db } from "@/lib/db";
 import { userTable } from "@/lib/db/schema/userSchema";
@@ -30,7 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
-      },    
+      },
       async authorize(credentials) {
         const [user] = await db
           .select()
@@ -44,10 +44,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Email or password is incorrect");
         }
 
-        const validPassword = await bcrypt.compare(
-          credentials.password as string,
-          user.passwordHashed
-        );
+        const validPassword = user.passwordHashed
+          ? await bcrypt.compare(
+              credentials.password as string,
+              user.passwordHashed
+            )
+          : false;
 
         if (!validPassword) {
           throw new Error("Email or password is incorrect");
@@ -63,6 +65,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   trustHost: true,
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const [existingUser] = await db
+          .select()
+          .from(userTable)
+          .where(eq(userTable.email, user.email as string));
+
+        if (!existingUser) {
+          await db.insert(userTable).values({
+            id: user.id,
+            fullName: user.name!,
+            email: user.email!,
+            passwordHashed: null,
+          });
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

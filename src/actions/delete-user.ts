@@ -5,7 +5,7 @@ import { userTable } from "@/lib/db/schema/userSchema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export const deleteUser = async (userId: number) => {
+export const deleteUser = async (userId: string) => {
     try{
     await db.delete(userTable).where(eq(userTable.id, userId));
 

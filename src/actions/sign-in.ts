@@ -63,7 +63,7 @@ export async function signInCredentials(
       };
     }
 
-    const passwordCheck = await compare(password, user.passwordHashed);
+    const passwordCheck = await compare(password, user.passwordHashed!);
     if (!passwordCheck) {
       return {
         errors: {
